@@ -43,6 +43,22 @@ Synapse 是一个零侵入的 API 适配层，它能直接解析 OpenAPI/Swagger
 <img src="docs/mcp_combination.png" alt="MCP 组合">
 <img src="docs/mcp_manager.png" alt="MCP 管理">
 
+## 🐳 Docker 一键部署
+
+```bash
+# 克隆项目
+git clone https://github.com/yourname/Synapse.git
+cd Synapse
+
+# 一键启动
+docker compose up -d
+
+# 访问 http://localhost:8000
+# 默认账户: admin / admin123
+```
+
+---
+
 ## ⚡ 快速开始
 
 ### 前置条件
@@ -105,7 +121,7 @@ pnpm run dev
 
 - [x] 多数据库持久化支持
 
-- [ ] Docker 一键部署镜像
+- [x] Docker 一键部署镜像
 
 - [ ] 支持更多鉴权方式 (OAuth2, API Key)
 

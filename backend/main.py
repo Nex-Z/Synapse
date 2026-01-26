@@ -134,6 +134,13 @@ app.include_router(tools.router)
 # MCP 协议（不受认证保护）
 app.include_router(mcp_protocol.router)
 
+# ============= 静态文件服务 (Docker 部署) =============
+# 在 Docker 环境中，前端构建产物放在 static 目录下
+static_dir = PathLib(__file__).parent / "static"
+if static_dir.exists():
+    from fastapi.staticfiles import StaticFiles
+    app.mount("/", StaticFiles(directory=str(static_dir), html=True), name="static")
+
 
 if __name__ == '__main__':
     uvicorn.run(app, host="0.0.0.0", port=8000)

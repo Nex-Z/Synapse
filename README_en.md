@@ -42,6 +42,22 @@ Synapse is a zero-intrusion API adapter that directly parses OpenAPI/Swagger doc
 <img src="docs/mcp_combination.png" alt="MCP Combination">
 <img src="docs/mcp_manager.png" alt="MCP Management">
 
+## 🐳 Docker Quick Start
+
+```bash
+# Clone the project
+git clone https://github.com/yourname/Synapse.git
+cd Synapse
+
+# One-click launch
+docker compose up -d
+
+# Visit http://localhost:8000
+# Default credentials: admin / admin123
+```
+
+---
+
 ## ⚡ Quick Start
 
 ### Prerequisites
@@ -95,7 +111,7 @@ Add this to your MCP settings:
 - [x] Visual service orchestration
 - [x] Orchestration as MCP Service
 - [x] Multi-database persistence support
-- [ ] Docker one-click deployment image
+- [x] Docker one-click deployment image
 - [ ] Support more authentication methods (OAuth2, API Key)
 - [ ] Intelligent parameter parsing optimization
 

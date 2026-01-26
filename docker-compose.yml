@@ -1,0 +1,29 @@
+# Synapse Docker Compose 一键部署配置
+# 使用方法: docker compose up -d
+
+services:
+  synapse:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: synapse
+    ports:
+      - "8000:8000"
+    volumes:
+      # 持久化数据 (数据库、备份等)
+      - ./data:/app/data
+      # 可选: 挂载自定义配置
+      # - ./config.yaml:/app/config.yaml:ro
+    environment:
+      # JWT 密钥 (生产环境请修改)
+      - JWT_SECRET_KEY=your-secret-key-change-in-production
+      # 默认管理员账户
+      - DEFAULT_ADMIN_USERNAME=admin
+      - DEFAULT_ADMIN_PASSWORD=admin123
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/docs')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
