@@ -15,6 +15,9 @@ class CombinationEndpoint(BaseModel):
     operationId: str | None = Field(default="", description="操作 ID")
     parameters: List[dict] | None = Field(default_factory=list, description="OpenAPI 参数定义")
     requestBody: dict | None = Field(None, description="OpenAPI 请求体定义")
+    # 认证配置（从服务继承）
+    authType: str = Field(default="none", description="认证类型：none/api_key/basic/oauth2")
+    authConfig: dict = Field(default_factory=dict, description="认证配置 JSON")
 
 
 class CombinationBase(BaseModel):

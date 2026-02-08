@@ -212,7 +212,21 @@ export async function deleteUser(id: number): Promise<void> {
   }
 }
 
-// ============= Service API =============
+export type AuthType = 'none' | 'api_key' | 'basic' | 'oauth2';
+
+export interface AuthConfig {
+  // API Key
+  key_name?: string;
+  key_value?: string;
+  key_location?: 'header' | 'query';
+  // Basic Auth
+  username?: string;
+  password?: string;
+  // OAuth2
+  client_id?: string;
+  client_secret?: string;
+  token_url?: string;
+}
 
 export interface Service {
   id: number;
@@ -220,6 +234,8 @@ export interface Service {
   url: string;
   type: string;
   status: 'healthy' | 'unhealthy';
+  auth_type: AuthType;
+  auth_config: AuthConfig;
   createdAt: string;
   updatedAt: string;
 }
@@ -228,12 +244,16 @@ export interface ServiceCreate {
   name: string;
   url: string;
   type: string;
+  auth_type?: AuthType;
+  auth_config?: AuthConfig;
 }
 
 export interface ServiceUpdate {
   name?: string;
   url?: string;
   type?: string;
+  auth_type?: AuthType;
+  auth_config?: AuthConfig;
 }
 
 /**
@@ -360,6 +380,8 @@ export interface CombinationEndpoint {
   path: string;
   method: string;
   summary: string;
+  authType?: AuthType;
+  authConfig?: AuthConfig;
 }
 
 export interface Combination {

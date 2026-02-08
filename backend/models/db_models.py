@@ -83,6 +83,10 @@ class ServiceDB(Base):
     type = Column(String(50), nullable=False, comment="文档类型")
     status = Column(String(20), default="healthy", index=True, comment="状态：healthy/unhealthy")
 
+    # 认证配置
+    auth_type = Column(String(20), default="none", nullable=False, comment="认证类型：none/api_key/basic/oauth2")
+    auth_config = Column(JSON, default=dict, nullable=False, comment="认证配置 JSON")
+
     # 时间戳
     created_at = Column(DateTime, default=datetime.now, nullable=False, comment="创建时间")
     updated_at = Column(DateTime, default=datetime.now, onupdate=datetime.now, nullable=False, comment="更新时间")

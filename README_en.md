@@ -112,7 +112,7 @@ Add this to your MCP settings:
 - [x] Orchestration as MCP Service
 - [x] Multi-database persistence support
 - [x] Docker one-click deployment image
-- [ ] Support more authentication methods (OAuth2, API Key)
+- [x] Support more authentication methods (API Key, Basic Auth, OAuth2)
 - [ ] Intelligent parameter parsing optimization
 
 ## ❓ FAQ

@@ -123,7 +123,7 @@ pnpm run dev
 
 - [x] Docker 一键部署镜像
 
-- [ ] 支持更多鉴权方式 (OAuth2, API Key)
+- [x] 支持更多鉴权方式 (API Key, Basic Auth, OAuth2)
 
 - [ ] 智能参数解析优化
 

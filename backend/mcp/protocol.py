@@ -145,6 +145,17 @@ def convert_openapi_endpoint_to_mcp_tool(
         "description": "Service base URL",
         "default": endpoint.get("serviceUrl", "")
     }
+    # 认证配置（隐藏参数）
+    input_schema["properties"]["_authType"] = {
+        "type": "string",
+        "description": "Authentication type",
+        "default": endpoint.get("authType", "none")
+    }
+    input_schema["properties"]["_authConfig"] = {
+        "type": "object",
+        "description": "Authentication configuration",
+        "default": endpoint.get("authConfig", {})
+    }
 
     return McpTool(
         name=tool_name,

@@ -29,13 +29,17 @@ class ServiceRepository:
         self,
         name: str,
         url: str,
-        type: str
+        type: str,
+        auth_type: str = "none",
+        auth_config: dict = None
     ) -> ServiceDB:
         """创建新服务"""
         service = ServiceDB(
             name=name,
             url=url,
             type=type,
+            auth_type=auth_type,
+            auth_config=auth_config or {},
             status="healthy",
             created_at=datetime.now(),
             updated_at=datetime.now()
@@ -50,7 +54,9 @@ class ServiceRepository:
         service_id: int,
         name: Optional[str] = None,
         url: Optional[str] = None,
-        type: Optional[str] = None
+        type: Optional[str] = None,
+        auth_type: Optional[str] = None,
+        auth_config: Optional[dict] = None
     ) -> Optional[ServiceDB]:
         """更新服务"""
         service = await self.get_by_id(service_id)
@@ -63,6 +69,10 @@ class ServiceRepository:
             service.url = url
         if type is not None:
             service.type = type
+        if auth_type is not None:
+            service.auth_type = auth_type
+        if auth_config is not None:
+            service.auth_config = auth_config
 
         service.updated_at = datetime.now()
         await self.session.flush()

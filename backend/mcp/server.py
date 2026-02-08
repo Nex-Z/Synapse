@@ -13,6 +13,7 @@ from mcp.protocol import (
     create_success_response,
     McpError
 )
+from core.auth_handler import AuthHandler
 
 
 class McpServerHandler:
@@ -124,6 +125,8 @@ class McpServerHandler:
             method = args.get("_method", "GET")
             path_template = args.get("_path", "")
             service_url = args.get("_serviceUrl", "")
+            auth_type = args.get("_authType", "none")
+            auth_config = args.get("_authConfig", {})
 
             if not service_url or not path_template:
                 return create_error_response(
@@ -161,12 +164,16 @@ class McpServerHandler:
                 if not k.startswith("_")
             }
 
+            # 4. 应用认证配置
+            headers = {}
+            await AuthHandler.apply_auth(auth_type, auth_config, headers, request_params)
+
             # 执行 HTTP 请求
             async with httpx.AsyncClient(timeout=30.0) as client:
                 if method.upper() == "GET":
-                    response = await client.get(full_url, params=request_params)
+                    response = await client.get(full_url, params=request_params, headers=headers)
                 elif method.upper() == "DELETE":
-                    response = await client.delete(full_url, params=request_params)
+                    response = await client.delete(full_url, params=request_params, headers=headers)
                 elif method.upper() in ["POST", "PUT", "PATCH"]:
                     # 如果有显式的 body 参数，使用它作为 JSON body
                     # 剩余的 request_params 作为 query params
@@ -175,14 +182,16 @@ class McpServerHandler:
                             method, 
                             full_url, 
                             json=json_body, 
-                            params=request_params
+                            params=request_params,
+                            headers=headers
                         )
                     else:
                         # 否则，将所有参数作为 JSON body
                         response = await client.request(
                             method, 
                             full_url, 
-                            json=request_params
+                            json=request_params,
+                            headers=headers
                         )
                 else:
                     return create_error_response(

@@ -59,7 +59,9 @@ async def create_service(
     db_service = await repo.create(
         name=service.name,
         url=service.url,
-        type=service.type
+        type=service.type,
+        auth_type=service.auth_type,
+        auth_config=service.auth_config
     )
 
     await db.commit()
@@ -87,7 +89,9 @@ async def update_service(
         service_id=service_id,
         name=service_update.name,
         url=service_update.url,
-        type=service_update.type
+        type=service_update.type,
+        auth_type=service_update.auth_type,
+        auth_config=service_update.auth_config
     )
 
     await db.commit()

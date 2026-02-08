@@ -20,7 +20,7 @@
     <!-- Add Service Modal -->
     <n-modal v-model:show="showAddModal">
       <n-card
-          style="width: 600px"
+          style="width: 650px"
           title="添加新服务"
           :bordered="false"
           size="huge"
@@ -37,6 +37,48 @@
           <n-form-item path="url" label="文档地址">
             <n-input v-model:value="newService.url" placeholder="http://.../openapi.json 或 http://.../swagger.yaml"/>
           </n-form-item>
+          
+          <!-- 认证配置 -->
+          <n-divider>认证配置（可选）</n-divider>
+          <n-form-item label="认证类型">
+            <n-select v-model:value="newService.auth_type" :options="authTypeOptions" placeholder="选择认证类型"/>
+          </n-form-item>
+          
+          <!-- API Key 配置 -->
+          <template v-if="newService.auth_type === 'api_key'">
+            <n-form-item label="Key 名称">
+              <n-input v-model:value="newService.auth_config.key_name" placeholder="例如：X-API-Key 或 Authorization"/>
+            </n-form-item>
+            <n-form-item label="Key 值">
+              <n-input v-model:value="newService.auth_config.key_value" type="password" show-password-on="click" placeholder="API Key 值"/>
+            </n-form-item>
+            <n-form-item label="Key 位置">
+              <n-select v-model:value="newService.auth_config.key_location" :options="keyLocationOptions" placeholder="选择 Key 位置"/>
+            </n-form-item>
+          </template>
+          
+          <!-- Basic Auth 配置 -->
+          <template v-if="newService.auth_type === 'basic'">
+            <n-form-item label="用户名">
+              <n-input v-model:value="newService.auth_config.username" placeholder="用户名"/>
+            </n-form-item>
+            <n-form-item label="密码">
+              <n-input v-model:value="newService.auth_config.password" type="password" show-password-on="click" placeholder="密码"/>
+            </n-form-item>
+          </template>
+          
+          <!-- OAuth2 配置 -->
+          <template v-if="newService.auth_type === 'oauth2'">
+            <n-form-item label="Token URL">
+              <n-input v-model:value="newService.auth_config.token_url" placeholder="https://auth.example.com/oauth/token"/>
+            </n-form-item>
+            <n-form-item label="Client ID">
+              <n-input v-model:value="newService.auth_config.client_id" placeholder="Client ID"/>
+            </n-form-item>
+            <n-form-item label="Client Secret">
+              <n-input v-model:value="newService.auth_config.client_secret" type="password" show-password-on="click" placeholder="Client Secret"/>
+            </n-form-item>
+          </template>
         </n-form>
         <template #footer>
           <n-button @click="showAddModal = false">取消</n-button>
@@ -84,6 +126,7 @@ import {
   NButtonGroup,
   NCard,
   NDataTable,
+  NDivider,
   NForm,
   NFormItem,
   NIcon,
@@ -99,7 +142,9 @@ import {
   getServices,
   createService as createServiceApi,
   deleteService as deleteServiceApi,
-  type Service
+  type Service,
+  type AuthType,
+  type AuthConfig
 } from '../services/api';
 
 // --- Interfaces ---
@@ -124,7 +169,21 @@ const loading = ref(false);
 const submitting = ref(false);
 const showAddModal = ref(false);
 const services = ref<Service[]>([]);
-const newService = ref({name: '', url: '', type: ''}); // Initialize type to empty string
+
+// New service form state with auth configuration
+const newService = ref<{
+  name: string;
+  url: string;
+  type: string;
+  auth_type: AuthType;
+  auth_config: AuthConfig;
+}>({
+  name: '',
+  url: '',
+  type: '',
+  auth_type: 'none',
+  auth_config: {}
+});
 
 // API viewing state
 const showApisModal = ref(false);
@@ -148,6 +207,20 @@ const docTypeOptions = [
   {label: 'OpenAPI 3.0', value: 'OpenAPI 3.0'},
   {label: 'Swagger 2.0', value: 'Swagger 2.0'},
   {label: 'AsyncAPI', value: 'AsyncAPI'},
+];
+
+// Auth Type Options
+const authTypeOptions = [
+  {label: '无认证', value: 'none'},
+  {label: 'API Key', value: 'api_key'},
+  {label: 'Basic Auth', value: 'basic'},
+  {label: 'OAuth2 Client Credentials', value: 'oauth2'},
+];
+
+// Key Location Options (for API Key auth)
+const keyLocationOptions = [
+  {label: 'Header', value: 'header'},
+  {label: 'Query Parameter', value: 'query'},
 ];
 
 // --- Form Rules ---
@@ -234,10 +307,19 @@ const handleAddService = () => {
           name: newService.value.name,
           url: newService.value.url,
           type: newService.value.type,
+          auth_type: newService.value.auth_type,
+          auth_config: newService.value.auth_config,
         });
         message.success('服务添加成功');
         showAddModal.value = false;
-        newService.value = {name: '', url: '', type: ''};
+        // Reset form with auth fields
+        newService.value = {
+          name: '',
+          url: '',
+          type: '',
+          auth_type: 'none',
+          auth_config: {}
+        };
         await loadServices();
       } catch (error) {
         message.error(`添加失败: ${error instanceof Error ? error.message : '未知错误'}`);
